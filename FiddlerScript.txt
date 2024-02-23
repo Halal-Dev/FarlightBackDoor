@@ -1,0 +1,20 @@
+import Fiddler;
+
+class Handlers {
+    static function OnBeforeRequest(oSession: Session) {
+        // Rediriger les requêtes vers localhost:3555
+        if (oSession.HostnameIs("backdoor.slfps.com") && !oSession.HTTPMethodIs("CONNECT")) {
+            oSession.hostname = "localhost";
+            oSession.port = 3555;
+            oSession.oRequest.headers.UriScheme = "http";
+            oSession.fullUrl = "http://localhost:3555/SolarlandCDN/Backdoor/onedime-global/2.0.1/Default/Windows/Backdoor_Default_Windows_onedime-global_2.0.1.4.pak";
+        }
+        
+        if (oSession.HostnameIs("backdoor.farlight84miraclegames.com") && !oSession.HTTPMethodIs("CONNECT")) {
+            oSession.hostname = "localhost";
+            oSession.port = 3555;
+            oSession.oRequest.headers.UriScheme = "http";
+            oSession.fullUrl = "http://localhost:3555/SolarlandCDN/Backdoor/onedime-global/2.0.1/Default/Windows/Backdoor_Default_Windows_onedime-global_2.0.1.4.pak";
+        }
+    }
+}
