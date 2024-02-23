@@ -49,7 +49,7 @@ nodegit.Clone(url, local, cloneOpts).then(function (repo) {
         console.log("Cleaned up directory");
         app.use(router);
         app.listen(3555, () => {
-            console.log(`ÉCOUTE SUR LE PORT 3555`);
+            console.log(`Listening on 3555`);
         });
     })
     .catch(error => {
