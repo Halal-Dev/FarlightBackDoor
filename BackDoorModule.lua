@@ -59,14 +59,14 @@ BackdoorModule.deepdump = function( tbl )
     local function innerdump( tbl, indent )
         checklist[ tostring(tbl) ] = true
         for k,v in pairs(tbl) do
-            BackdoorModule.log(indent..k,v,type(v),checklist[ tostring(tbl) ])
+            Log(indent..k,v,type(v),checklist[ tostring(tbl) ])
             if (type(v) == "table" and not checklist[ tostring(v) ]) then innerdump(v,indent.."    ") end
         end
     end
-    BackdoorModule.log("====== DEEP DUMP "..tostring(tbl).." =======")
+    Log("====== DEEP DUMP "..tostring(tbl).." =======")
     checklist[ tostring(tbl) ] = true
     innerdump( tbl, "" )
-    BackdoorModule.log("-----------------------------------")
+    Log("-----------------------------------")
 end
 
 -- deep search for a table by name
@@ -118,6 +118,30 @@ end
 
 
 BackdoorModule.HookOutputFunctions()
+
+local obj, path = BackdoorModule.findObjectByName("UDPManager", _G)
+if obj then
+    print("Object found at path: " .. table.concat(path, " -> "))
+    -- Now you can modify the object as needed
+    BackdoorModule.deepdump(obj)
+    obj.Object:Delete()
+else
+    print("Object not found.")
+end
+
+--[[
+GetLocalText = FunctionHook:New(GetLocalText, function(fn, ...)
+    print("GetLocalText Arguments")
+    for i, arg in ipairs({...}) do
+        print(i, arg)
+    end
+    local ret = fn(...)
+    print("GetLocalReturn : "..ret)
+    return ''
+end)
+--]]
+
+
 --[[
 _G.print = FunctionHook:New(_G.print, function(fn, ...)
     fn("Before")
