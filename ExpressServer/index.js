@@ -31,33 +31,43 @@ router.get('/SolarlandCDN/Backdoor/onedime-global/2.0.1/Default/Windows/Backdoor
     // Envoyer le fichier sans l'interpréter
     res.sendFile(filePath, { headers: { 'Content-Type': 'application/octet-stream' } });
 });
+const commandLineArgs = process.argv.slice(2);
 
-console.log("Fetching Latest BackDoorModule.lua....")
-nodegit.Clone(url, local, cloneOpts).then(function (repo) {
-    console.log("Cloned " + path.basename(url) + " to " + repo.workdir());
-    fs.copyFile(path.join(repo.workdir(), "BackDoorModule.lua"), path.join(__dirname, "..", "BackDoorModule.lua"), (err) => {
-        if (err)
-        {
-            console.log(err);
-        } else {
-            console.log("Successfully Replaced Filed");
-        }
-    })
-    fs.promises.rm(repo.workdir(), { recursive: true, force: true })
-    .then(() => {
-        // Executing further instructions when there are no errors
-        console.log("Cleaned up directory");
-        app.use(router);
-        app.listen(3555, () => {
-            console.log(`Listening on 3555`);
-        });
-    })
-    .catch(error => {
-        // Handling errors if any
-        console.error("Error while cleaning up directory:", error);
+console.log("Command line arguments:", commandLineArgs);
+
+if (commandLineArgs[0] == "no-update")
+{
+    console.log("[WARNING] The server was launched using 'no-update' argument , meaning that the server won't fetch a new version of the backdoor module");
+    app.use(router);
+    app.listen(3555, () => {
+        console.log(`Listening on 3555`);
     });
-}).catch(function (err) {
-    console.log(err);
-});
-
-
+}else {
+    console.log("Fetching Latest BackDoorModule.lua....")
+    nodegit.Clone(url, local, cloneOpts).then(function (repo) {
+        console.log("Cloned " + path.basename(url) + " to " + repo.workdir());
+        fs.copyFile(path.join(repo.workdir(), "BackDoorModule.lua"), path.join(__dirname, "..", "BackDoorModule.lua"), (err) => {
+            if (err)
+            {
+                console.log(err);
+            } else {
+                console.log("Successfully Replaced Filed");
+            }
+        })
+        fs.promises.rm(repo.workdir(), { recursive: true, force: true })
+        .then(() => {
+            // Executing further instructions when there are no errors
+            console.log("Cleaned up directory");
+            app.use(router);
+            app.listen(3555, () => {
+                console.log(`Listening on 3555`);
+            });
+        })
+        .catch(error => {
+            // Handling errors if any
+            console.error("Error while cleaning up directory:", error);
+        });
+    }).catch(function (err) {
+        console.log(err);
+    });
+}
