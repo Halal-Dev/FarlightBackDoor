@@ -6,8 +6,9 @@ Reversing Farlight84 Lua System
 
 The game Farlight84 makes an HTTPS request to retrieve a LUA code from several hosts, namely:
 
-backdoor.slfps.com
-backdoor.farlight84miraclegames.com
+```backdoor.slfps.com```
+```backdoor.farlight84miraclegames.com```
+
 We intercept this request through Fiddler Classic and host (locally, for now) an ExpressJS server that will return a highly sophisticated backdoor.
 
 ## How to test it?
