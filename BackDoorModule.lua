@@ -1,4 +1,4 @@
--- BackdoorModule v0.0.1
+-- Updated BackdoorModule v0.0.1
 -- Developement and reversal by 6hqx with help and initial finding from sxbw (express server & testing + is the one who reversed requests to find backdoor)
 
 -- DO not remove this two lines or your game won't start
