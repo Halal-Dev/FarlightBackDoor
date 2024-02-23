@@ -531,4 +531,5 @@ dist
 
 package-lock.json
 
-key.txt
+id_rsa
+id_rsa.pub
