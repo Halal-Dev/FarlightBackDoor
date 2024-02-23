@@ -30,3 +30,7 @@ Once done, the server will download the latest highly sophisticated backdoor and
 8. Paste the content of ```FiddlerScript.txt``` into Fiddler Classic's Fiddler Script category and click ```Save Script```.
 
 9. Tip: Change All Processes to Non-Browsers for better readability.
+
+## Disclaimer
+
+We vehemently discourage any form of cheating and hacking, including the exploitation of vulnerabilities like our backdoor in Farlight84. We cannot be held responsible for any actions taken by individuals to compromise the integrity of the game or violate its terms of service. Such activities not only undermine the fairness of gameplay but also pose serious legal and ethical implications. We advocate for fair play and urge users to refrain from engaging in any unauthorized access or manipulation of game systems. Any misuse of our tools or encouragement of unethical behavior is contrary to our principles and values.
