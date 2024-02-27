@@ -1,5 +1,5 @@
 -- Updated BackdoorModule v0.0.1
--- Developement and reversal by 6hqx with help and initial finding from sxbw (express server & testing + is the one who reversed requests to find backdoor)
+-- Developement and reversal by 6hqx with help and initial finding from sbxw (express server & testing + is the one who reversed requests to find backdoor)
 
 -- DO not remove this two lines or your game won't start
 local args = {...} -- the game fill this argument table with cool stuff
